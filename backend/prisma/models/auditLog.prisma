@@ -1,0 +1,62 @@
+enum AuditAction {
+  USER_CREATED
+  USER_UPDATED
+  USER_ACTIVATED
+  USER_DEACTIVATED
+  USER_PASSWORD_CHANGED
+  OFFICE_CREATED
+  OFFICE_UPDATED
+  OFFICE_DELETED
+  POSITION_CREATED
+  POSITION_UPDATED
+  POSITION_DELETED
+  CATEGORY_CREATED
+  CATEGORY_UPDATED
+  CATEGORY_DELETED
+  SUBCATEGORY_CREATED
+  SUBCATEGORY_UPDATED
+  SUBCATEGORY_DELETED
+  CASE_DELETED
+  CASE_RESTORED
+  ATTACHMENT_DOWNLOADED
+}
+
+enum AuditEntityType {
+  USER
+  OFFICE
+  POSITION
+  FIRE_INCIDENT_CATEGORY
+  FIRE_INCIDENT_SUBCATEGORY
+  INVESTIGATION_CASE
+  ATTACHMENT
+}
+
+// General audit trail (REQUIREMENTS.md Q-23). Investigation workflow history
+// stays in InvestigationReferral and InvestigationReportReview.
+model AuditLog {
+  id String @id @default(uuid())
+
+  actorId String
+  actor   User   @relation("AuditActor", fields: [actorId], references: [id])
+
+  action     AuditAction
+  entityType AuditEntityType
+  entityId   String
+
+  // Snapshots of the affected office and its region, used to scope what
+  // REGIONAL_ADMIN can read. Plain ids, so entries outlive deleted offices.
+  officeId String?
+  regionId String?
+
+  // Changed fields as { field: { from, to } }, or a snapshot on create and
+  // delete. Never holds passwords or tokens.
+  changes Json?
+
+  createdAt DateTime @default(now())
+
+  @@index([entityType, entityId])
+  @@index([actorId])
+  @@index([createdAt])
+  @@index([officeId])
+  @@index([regionId])
+}

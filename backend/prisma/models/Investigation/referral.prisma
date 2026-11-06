@@ -1,0 +1,24 @@
+// Each move of an incident's investigation responsibility between offices.
+model InvestigationReferral {
+  id String @id @default(uuid())
+
+  caseId String
+  case   InvestigationCase @relation(fields: [caseId], references: [id], onDelete: Cascade)
+
+  fromOfficeId String
+  fromOffice   Office @relation("ReferralFromOffice", fields: [fromOfficeId], references: [id])
+
+  toOfficeId String
+  toOffice   Office @relation("ReferralToOffice", fields: [toOfficeId], references: [id])
+
+  direction ReferralDirection
+
+  referredById String
+  referredBy   User   @relation("ReferralReferredBy", fields: [referredById], references: [id])
+
+  remarks String?
+
+  createdAt DateTime @default(now())
+
+  @@index([caseId, createdAt])
+}

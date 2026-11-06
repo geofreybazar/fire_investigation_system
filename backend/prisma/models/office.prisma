@@ -1,0 +1,45 @@
+enum OfficeType {
+  NATIONAL_HEADQUARTERS
+  REGIONAL_OFFICE
+  DISTRICT_FIRE_STATION
+  PROVINCIAL_FIRE_STATION
+  CITY_FIRE_STATION
+  MUNICIPAL_FIRE_STATION
+}
+
+model Office {
+  id       String     @id @default(uuid())
+  name     String
+  type     OfficeType
+  isActive Boolean    @default(true)
+
+  // office heirarchy
+  parentId String?
+  parent   Office?  @relation("OfficeHierarchy", fields: [parentId], references: [id])
+  children Office[] @relation("OfficeHierarchy")
+
+  // Regional scope
+  regionId        String?
+  regionCode      String?  @unique
+  region          Office?  @relation("OfficeRegion", fields: [regionId], references: [id])
+  regionalOffices Office[] @relation("OfficeRegion")
+
+  users User[]
+
+  // Investigation cases and investigations
+  stationCases            InvestigationCase[]     @relation("CaseStation")
+  createdCases            InvestigationCase[]     @relation("CaseCreatedByOffice")
+  handledCases            InvestigationCase[]     @relation("CaseHandlingOffice")
+  conductedInvestigations Investigation[]         @relation("InvestigationConductingOffice")
+  referralsFrom           InvestigationReferral[] @relation("ReferralFromOffice")
+  referralsTo             InvestigationReferral[] @relation("ReferralToOffice")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Exact-match backstop; the service also checks case-insensitively.
+  @@unique([parentId, name])
+  @@index([parentId])
+  @@index([regionId])
+  @@index([type])
+}

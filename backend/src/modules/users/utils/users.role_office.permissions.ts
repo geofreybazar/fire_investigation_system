@@ -1,0 +1,49 @@
+import { ROLE } from '../../../generated/prisma/enums.js';
+import { OfficeType } from '../../../generated/prisma/enums.js';
+
+export const role_officePermissions: Record<ROLE, OfficeType[]> = {
+  // National Headquarters
+  [ROLE.SUPER_ADMIN]: [
+    OfficeType.NATIONAL_HEADQUARTERS,
+    OfficeType.REGIONAL_OFFICE,
+    OfficeType.DISTRICT_FIRE_STATION,
+    OfficeType.PROVINCIAL_FIRE_STATION,
+    OfficeType.CITY_FIRE_STATION,
+    OfficeType.MUNICIPAL_FIRE_STATION,
+  ],
+
+  [ROLE.NHQ_ADMIN]: [OfficeType.NATIONAL_HEADQUARTERS],
+  [ROLE.NHQ_CHIEF_INVESTIGATOR]: [OfficeType.NATIONAL_HEADQUARTERS],
+  [ROLE.NHQ_INVESTIGATOR]: [OfficeType.NATIONAL_HEADQUARTERS],
+  [ROLE.NHQ_VIEWER]: [OfficeType.NATIONAL_HEADQUARTERS],
+
+  // Regional
+  [ROLE.REGIONAL_ADMIN]: [OfficeType.REGIONAL_OFFICE],
+  [ROLE.REGIONAL_CHIEF_INVESTIGATOR]: [OfficeType.REGIONAL_OFFICE],
+  [ROLE.REGIONAL_INVESTIGATOR]: [OfficeType.REGIONAL_OFFICE],
+  [ROLE.REGIONAL_VIEWER]: [OfficeType.REGIONAL_OFFICE],
+
+  // District / Provincial
+  [ROLE.DISTRICT_PROVINCE_CHIEF_INVESTIGATOR]: [
+    OfficeType.DISTRICT_FIRE_STATION,
+    OfficeType.PROVINCIAL_FIRE_STATION,
+  ],
+  [ROLE.DISTRICT_PROVINCE_INVESTIGATOR]: [
+    OfficeType.DISTRICT_FIRE_STATION,
+    OfficeType.PROVINCIAL_FIRE_STATION,
+  ],
+  [ROLE.DISTRICT_PROVINCE_VIEWER]: [
+    OfficeType.DISTRICT_FIRE_STATION,
+    OfficeType.PROVINCIAL_FIRE_STATION,
+  ],
+
+  // Station
+  [ROLE.CITY_MUNICIPALITY_INVESTIGATOR]: [
+    OfficeType.CITY_FIRE_STATION,
+    OfficeType.MUNICIPAL_FIRE_STATION,
+  ],
+  [ROLE.CITY_MUNICIPALITY_CHIEF_INVESTIGATOR]: [
+    OfficeType.CITY_FIRE_STATION,
+    OfficeType.MUNICIPAL_FIRE_STATION,
+  ],
+};

@@ -1,0 +1,12 @@
+// Per (year, month, regionCode) sequence for case numbers
+// INV-YYYY-MM-<REGION>-NNNNNN. Table name kept from the incident counter.
+model IncidentNumberCounter {
+  id         String @id @default(uuid())
+  year       Int
+  month      Int
+  regionCode String
+  lastNumber Int    @default(0)
+
+  @@unique([year, month, regionCode])
+  @@map("incident_number_counters")
+}

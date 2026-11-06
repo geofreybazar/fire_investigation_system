@@ -1,0 +1,14 @@
+model Establishment {
+  id String @id @default(uuid())
+
+  binBanNumber String? @unique
+  name         String
+  ownerName    String?
+  occupantName String?
+
+  totalLotFloorArea Decimal? @db.Decimal(12, 2)
+  contentStorage    String?
+  numberOfStoreys   Int?
+
+  cases InvestigationCase[]
+}

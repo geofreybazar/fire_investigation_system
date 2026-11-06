@@ -1,0 +1,84 @@
+enum ROLE {
+  SUPER_ADMIN
+  NHQ_ADMIN
+  NHQ_VIEWER
+  NHQ_CHIEF_INVESTIGATOR
+  NHQ_INVESTIGATOR
+
+  REGIONAL_ADMIN
+  REGIONAL_CHIEF_INVESTIGATOR
+  REGIONAL_INVESTIGATOR
+  REGIONAL_VIEWER
+
+  DISTRICT_PROVINCE_CHIEF_INVESTIGATOR
+  DISTRICT_PROVINCE_INVESTIGATOR
+  DISTRICT_PROVINCE_VIEWER
+
+  CITY_MUNICIPALITY_INVESTIGATOR
+  CITY_MUNICIPALITY_CHIEF_INVESTIGATOR
+}
+
+enum RANK {
+  FDIR
+  FCSUPT
+  FSSUPT
+  FSUPT
+  FCINSP
+  FSINSP
+  FINSP
+  SFO4
+  SFO3
+  SFO2
+  SFO1
+  FO3
+  FO2
+  FO1
+}
+
+model User {
+  id             String  @id @default(uuid())
+  email          String  @unique
+  account_number String  @unique
+  rank           RANK
+  first_name     String
+  last_name      String
+  middle_name    String?
+  password       String
+  isActive       Boolean @default(true)
+
+  // Set for users created through the API (default password); cleared when they change it.
+  mustChangePassword Boolean   @default(false)
+  failedLoginCount   Int       @default(0)
+  lockedUntil        DateTime?
+
+  refreshTokens RefreshToken[]
+
+  officeId String
+  office   Office @relation(fields: [officeId], references: [id])
+
+  positionId String
+  position   Position @relation(fields: [positionId], references: [id])
+  role       ROLE
+
+  notification NotificationPreference?
+
+  // Investigation cases
+  createdCases InvestigationCase[] @relation("CaseCreatedBy")
+  deletedCases InvestigationCase[] @relation("CaseDeletedBy")
+
+  // Investigations
+  assignedInvestigations Investigation[]             @relation("InvestigationAssignee")
+  investigationsAssigned Investigation[]             @relation("InvestigationAssigner")
+  investigationReferrals InvestigationReferral[]     @relation("ReferralReferredBy")
+  reviewedReports        InvestigationReport[]       @relation("ReportReviewedBy")
+  reportReviews          InvestigationReportReview[] @relation("ReportReviewReviewer")
+
+  auditLogs           AuditLog[]     @relation("AuditActor")
+  notifications       Notification[]
+  uploadedAttachments Attachment[]   @relation("AttachmentUploadedBy")
+  removedAttachments  Attachment[]   @relation("AttachmentRemovedBy")
+
+  @@index([officeId])
+  @@index([positionId])
+  @@index([role])
+}

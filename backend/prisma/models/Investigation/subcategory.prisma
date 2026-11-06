@@ -1,0 +1,16 @@
+model FireIncidentSubcategory {
+  id   String @id @default(uuid())
+  name String
+
+  categoryId String
+
+  category FireIncidentCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  cases InvestigationCase[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([categoryId, name])
+  @@index([categoryId])
+}

@@ -1,0 +1,43 @@
+import { OfficeType, ROLE } from '../../../generated/prisma/enums.js';
+
+export const officePermissions: Record<ROLE, OfficeType[]> = {
+  [ROLE.SUPER_ADMIN]: [
+    OfficeType.NATIONAL_HEADQUARTERS,
+    OfficeType.REGIONAL_OFFICE,
+    OfficeType.DISTRICT_FIRE_STATION,
+    OfficeType.PROVINCIAL_FIRE_STATION,
+    OfficeType.CITY_FIRE_STATION,
+    OfficeType.MUNICIPAL_FIRE_STATION,
+  ],
+
+  [ROLE.NHQ_ADMIN]: [
+    OfficeType.REGIONAL_OFFICE,
+    OfficeType.DISTRICT_FIRE_STATION,
+    OfficeType.PROVINCIAL_FIRE_STATION,
+    OfficeType.CITY_FIRE_STATION,
+    OfficeType.MUNICIPAL_FIRE_STATION,
+  ],
+
+  [ROLE.REGIONAL_ADMIN]: [
+    OfficeType.DISTRICT_FIRE_STATION,
+    OfficeType.PROVINCIAL_FIRE_STATION,
+    OfficeType.CITY_FIRE_STATION,
+    OfficeType.MUNICIPAL_FIRE_STATION,
+  ],
+
+  // Other roles cannot create offices
+  [ROLE.NHQ_CHIEF_INVESTIGATOR]: [],
+  [ROLE.NHQ_INVESTIGATOR]: [],
+  [ROLE.NHQ_VIEWER]: [],
+
+  [ROLE.REGIONAL_CHIEF_INVESTIGATOR]: [],
+  [ROLE.REGIONAL_INVESTIGATOR]: [],
+  [ROLE.REGIONAL_VIEWER]: [],
+
+  [ROLE.DISTRICT_PROVINCE_CHIEF_INVESTIGATOR]: [],
+  [ROLE.DISTRICT_PROVINCE_INVESTIGATOR]: [],
+  [ROLE.DISTRICT_PROVINCE_VIEWER]: [],
+
+  [ROLE.CITY_MUNICIPALITY_INVESTIGATOR]: [],
+  [ROLE.CITY_MUNICIPALITY_CHIEF_INVESTIGATOR]: [],
+};

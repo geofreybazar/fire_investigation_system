@@ -1,0 +1,103 @@
+// An investigation case: the fire being investigated (REQUIREMENTS.md §4).
+// Created by a chief investigator at any level. Its fields are provisional
+// until the official BFP forms are available.
+model InvestigationCase {
+  id     String @id @default(uuid())
+  // INV-YYYY-MM-<REGION>-NNNNNN, generated on creation (Asia/Manila).
+  caseNo String @unique
+
+  dateTimeFireIncident DateTime?
+  dateTimeReported     DateTime?
+  dateTimeCallReceived DateTime?
+
+  // City/municipal station where the fire happened. Region, province/district
+  // and city/municipality are derived from it, and referrals follow its chain.
+  stationId String
+  station   Office @relation("CaseStation", fields: [stationId], references: [id])
+
+  createdByOfficeId String
+  createdByOffice   Office @relation("CaseCreatedByOffice", fields: [createdByOfficeId], references: [id])
+
+  // Office whose chief investigator decides on the case; starts as the creator's office.
+  handlingOfficeId String
+  handlingOffice   Office @relation("CaseHandlingOffice", fields: [handlingOfficeId], references: [id])
+
+  createdById String
+  createdBy   User   @relation("CaseCreatedBy", fields: [createdById], references: [id])
+
+  categoryId    String
+  subcategoryId String?
+  category      FireIncidentCategory     @relation(fields: [categoryId], references: [id])
+  subcategory   FireIncidentSubcategory? @relation(fields: [subcategoryId], references: [id])
+
+  establishmentId String?
+  establishment   Establishment? @relation(fields: [establishmentId], references: [id])
+
+  remarks String?
+
+  // Soft delete by SUPER_ADMIN; hides the case and everything connected to it.
+  deletedAt             DateTime?
+  deletedById           String?
+  deletedBy             User?     @relation("CaseDeletedBy", fields: [deletedById], references: [id])
+  deletionReason        String?
+  deletionMemoReference String?
+
+  location       CaseLocation?
+  impact         CaseImpact?
+  investigations Investigation[]
+  referrals      InvestigationReferral[]
+  attachments    Attachment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([stationId])
+  @@index([createdByOfficeId])
+  @@index([handlingOfficeId])
+  @@index([categoryId])
+  @@index([subcategoryId])
+  @@index([establishmentId])
+  @@index([dateTimeFireIncident])
+  @@index([deletedAt])
+}
+
+model CaseLocation {
+  id String @id @default(uuid())
+
+  placeOfOccurence String
+  barangay         String
+
+  // Derived from the case station, never from the client.
+  region            String
+  province_district String
+  city_municipality String
+
+  latitude  Decimal? @db.Decimal(9, 6)
+  longitude Decimal? @db.Decimal(9, 6)
+
+  caseId String            @unique
+  case   InvestigationCase @relation(fields: [caseId], references: [id], onDelete: Cascade)
+}
+
+model CaseImpact {
+  id String @id @default(uuid())
+
+  fatalitiesCiv Int @default(0)
+  injuredCiv    Int @default(0)
+
+  fatalitiesBFP Int @default(0)
+  injuredBFP    Int @default(0)
+
+  fatalitiesLEA Int @default(0)
+  injuredLEA    Int @default(0)
+
+  establishmentsBurned Int @default(0)
+  familiesAffected     Int @default(0)
+  individualsAffected  Int @default(0)
+
+  estimatedDamages      Decimal? @db.Decimal(15, 2)
+  finalEstimatedDamages Decimal? @db.Decimal(15, 2)
+
+  caseId String            @unique
+  case   InvestigationCase @relation(fields: [caseId], references: [id], onDelete: Cascade)
+}

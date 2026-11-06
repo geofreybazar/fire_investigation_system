@@ -1,0 +1,6 @@
+export const CATEGORY_TYPE = [
+  "STRUCTURAL",
+  "NON_STRUCTURAL",
+  "TRANSPORTATION",
+  "WILDLAND",
+] as const;

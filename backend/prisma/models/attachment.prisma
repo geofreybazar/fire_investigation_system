@@ -1,0 +1,35 @@
+// Evidence and documents (REQUIREMENTS.md Q-22). The file itself is kept by
+// the storage service under `storageKey`, outside the web root; only this
+// row says who may see it. Hidden and restored with its case.
+model Attachment {
+  id String @id @default(uuid())
+
+  caseId String
+  case   InvestigationCase @relation(fields: [caseId], references: [id], onDelete: Cascade)
+
+  // Set for investigation evidence; null for case attachments.
+  investigationId String?
+  investigation   Investigation? @relation(fields: [investigationId], references: [id], onDelete: Cascade)
+
+  uploadedById String
+  uploadedBy   User   @relation("AttachmentUploadedBy", fields: [uploadedById], references: [id])
+
+  originalName String
+  // Detected from the file's signature, not taken from the client.
+  mimeType     String
+  sizeBytes    Int
+  storageKey   String  @unique
+  // SHA-256 of the content, for chain-of-custody integrity checks.
+  sha256       String
+  description  String?
+
+  createdAt DateTime @default(now())
+
+  // Soft removal by the uploader; the file is kept.
+  removedAt   DateTime?
+  removedById String?
+  removedBy   User?     @relation("AttachmentRemovedBy", fields: [removedById], references: [id])
+
+  @@index([caseId, createdAt])
+  @@index([investigationId])
+}

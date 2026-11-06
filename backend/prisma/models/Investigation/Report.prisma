@@ -1,0 +1,45 @@
+model InvestigationReport {
+  id String @id @default(uuid())
+
+  investigationId String @unique
+
+  findings        String?
+  cause           String?
+  conclusion      String?
+  recommendations String?
+
+  status ReportStatus
+
+  submittedAt DateTime?
+  reviewedAt  DateTime?
+
+  // Chief investigator behind the latest review decision
+  reviewedById String?
+  reviewedBy   User?   @relation("ReportReviewedBy", fields: [reviewedById], references: [id])
+
+  reviews InvestigationReportReview[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  investigation Investigation @relation(fields: [investigationId], references: [id], onDelete: Cascade)
+}
+
+// Every review decision on a report, so earlier rejections are kept.
+model InvestigationReportReview {
+  id String @id @default(uuid())
+
+  reportId String
+  report   InvestigationReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
+
+  decision ReportDecision
+
+  reviewerId String
+  reviewer   User   @relation("ReportReviewReviewer", fields: [reviewerId], references: [id])
+
+  remarks String?
+
+  createdAt DateTime @default(now())
+
+  @@index([reportId, createdAt])
+}
